@@ -6649,6 +6649,20 @@ const getMovies = () => {
     return movies;
 };
 
+const getGenres = () => {
+    const genres = new Set();
+    const movies = getMovies();
+    movies.forEach(movie=>{
+        if(Array.isArray(movie.genres)) movie.genres.forEach(g=> genres.add(g));
+    });
+
+    const convertedGenres = Array.from(genres).map((g, idx)=>({id: idx, name: g}));
+
+    return convertedGenres;
+
+}
+
 export {
-    getMovies
+    getMovies,
+    getGenres
 };

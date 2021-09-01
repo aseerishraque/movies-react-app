@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import Pagination from './paginate.component';
-import { getMovies } from '../services/movies.service';
+import { getMovies, getGenres } from '../services/movies.service';
 import Filter from '../common/filtering.component';
 
 class Movies extends Component {
     state = { 
         movies: getMovies(),
-        genres:['Crime', 'Romantic', 'Drama', 'Thriller'],
+        genres: [{name: 'All Genres'}, ...getGenres()],
         activePage: 1,
         dataCount:10,
         currentItems:[],
-       
+        selected_genre:'All Genres',
      }
      setActivePage = (page) => {
         this.setState({activePage: page});
@@ -31,6 +31,21 @@ class Movies extends Component {
         })
         this.setState({...this.state, movies});
     }
+    onClickGenre = (name) => {
+        this.setState({selected_genre: name});
+        const movies = this.state.movies.filter(movie=>{
+            const genres = new Set();
+            if(Array.isArray(movie.genres)) movie.genres.forEach(g=> genres.add(g));
+            const convertedGenres = Array.from(genres);
+            if(convertedGenres.map(g=>g===name ? true : false)){
+                return true;
+            }else{
+                return false;
+            }
+        });
+        console.log(movies);
+        this.setState({...this.state, movies});
+    }
     render() { 
         const {genres} = this.state;
         const movies = this.paginateMovies();
@@ -38,7 +53,7 @@ class Movies extends Component {
             <>
             <div className="row">
                 <div className="col-lg-4">
-                    <Filter genres={genres}/>
+                    <Filter selected_genre={this.state.selected_genre} onClickGenre={this.onClickGenre} genres={genres}/>
                 </div>
                 <div className="col-lg-8">
                     <h1>Showing {movies.length} Movies</h1>
